@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>タスク管理</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+    <h1>タスク管理</h1>
+
+    <p class="success-message" th:if="${successMessage}" th:text="${successMessage}"></p>
+
+    <form th:action="@{/tasks}" th:object="${taskForm}" method="post">
+        <div>
+            <label for="title">タイトル</label>
+            <input id="title" type="text" th:field="*{title}" maxlength="100" required>
+
+            <p class="error-message" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></p>
+        </div>
+
+        <div>
+            <label for="dueDate">期限日</label>
+            <input id="dueDate" type="date" th:field="*{dueDate}" required>
+
+            <p class="error-message" th:if="${#fields.hasErrors('dueDate')}">期限日を正しい日付で入力してください。</p>
+        </div>
+
+        <button type="submit">登録</button>
+    </form>
+
+    <h2>タスク一覧</h2>
+
+    <p class="empty-message" th:if="${#lists.isEmpty(tasks)}">タスクはまだありません。</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>タイトル</th>
+                <th>期限日</th>
+                <th>状態</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr th:each="task : ${tasks}">
+                <td th:text="${task.id}"></td>
+                <td th:text="${task.title}"></td>
+                <td th:text="${task.dueDate}"></td>
+                <td>
+                    <span class="status" th:classappend="${task.status.name() == 'OVERDUE'
+                  ? 'status-overdue'
+                  : 'status-todo'}" th:text="${task.status.displayName}">
+                    </span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p class="api-link"><a th:href="@{/api/tasks}">REST APIを表示</a></p>
+
+</body>
+
+</html>
